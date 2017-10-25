@@ -17,6 +17,7 @@
 <script src="/vendor/plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="/vendor/plugins/datatables/dataTables.bootstrap.min.js"></script>
 <script src="/vendor/app/js/agenda.js"></script>
+<script src="/vendor/igorescobar/jquery-mask-plugin/src/jquery.mask.js"></script>
 
 </body>
 </html>

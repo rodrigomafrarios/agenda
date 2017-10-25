@@ -2,146 +2,151 @@
  * Created by rodrigo.mafra on 24/10/2017.
  */
 
-var Agenda = {
+// constantes
+var $body = $('body');
+var TEMPO_ERRO_NA_TELA_MS = 10000;
+
+var Agenda =
+{
+    init : function () {
+        Agenda.events();
+
+        $('#contentResult').hide();
+
+        $('#telefoneCelular').mask(
+            '(99) 99999-9999'
+        );
+        $('#telefoneResidencial').mask(
+            '(99) 9999-9999'
+        );
+        $('#telefoneComercial').mask(
+            '(99) 9999-9999'
+        );
+
+        $('#emailPessoal,#emailTrabalho').mask("A", {
+            translation: {
+                "A": { pattern: /[\w@\-.+]/, recursive: true }
+            }
+        });
+    },
+
+    showError : function(message, title)
+    {
+        var container = '';
+        var resposta  = '';
+
+        if(title === undefined || title === '' || title === null || title == 'Erro')
+        {
+            title = 'Erro';
+            container = '.alert-container';
+            resposta = 'erro';
+        }
+
+        if(title === 'Sucesso')
+        {
+            container = '.success-container';
+            resposta  = 'sucesso';
+        }
+
+        console.log("container: " + container);
+
+        // obtem o alert
+        var $alert = $body.find(container);
+
+        $alert.find('.titulo-'+resposta).text(title + '!');
+        $alert.find('.mensagem-'+resposta).text(message);
+
+
+
+        // mostra na tela
+        $body.find(container)
+            .removeClass('hidden')
+            .hide()
+            .fadeIn(400, function()
+            {
+                // depois de X segundos tira da tela
+                setTimeout(
+                    function()
+                    {
+                        $body.find(container).fadeOut();
+
+                    }, TEMPO_ERRO_NA_TELA_MS
+                );
+
+                if(title === 'Sucesso')
+                {
+                    location.reload();
+                }
+
+                return false;
+
+
+            });
+    },
+
+    formValidation: function ($class)
+    {
+        var $inputs                  = $('.' + $class).find('input');
+        var msg                      = $('#msgError').val();
+        var formData                 = new FormData();
+
+
+        //percorre os inputs
+        for(var i = 0; i < $inputs.length;i++)
+        {
+            //checa se o input está vazio
+            if($($inputs[i]).val().length === 0 && $($inputs[i]).attr('name') == 'nome')
+            {
+                var msg = $('#msgErrorNome').val();
+                Agenda.showError(msg,'Erro');
+                return false;
+            }
+            else
+            {
+                formData.append($($inputs[i])[0].name,$($inputs[i]).val());
+            }
+        }
+
+        //abre requisição AJAX
+        var req = new XMLHttpRequest();
+        req.open("POST","/contatos/doAdd",true);
+
+        req.onreadystatechange = function () {
+
+            if(this.readyState === 4 && this.status === 200)
+            {
+                var response = this.response;
+                response = $.parseJSON(response);
+
+                Agenda.showError(response.msg,'Sucesso');
+
+            }
+        };
+        req.send(formData);
+    },
+
+    toPopulateHTML : function () {
+
+        $.get('/contatos/getDataToManagement',function (data) {
+            var returnJSON = $.parseJSON(data);
+
+            $('#contentResult').load('/contatos/manage');
+
+        });
+
+    },
 
     events : function() {
 
-        $('#openModalAdd').click(function(){
-
-            $('#modalAdd').dialog({
-                buttons:[
-                    {
-                        text:"OK",
-                        click: function()
-                        {
-                            $( this ).dialog( "close" );
-                        }
-                    }
-                ]
-
-            });
-
+        $('#cadastrar').click(function () {
+            Agenda.formValidation('modal-body')
         });
 
-        $("#cadastro").on("hidden.bs.modal", function(){
-            $("#cadastro").html("");
+        $('#gerenciar').click(function () {
+            console.log("clicou em gerenciar");
+            Agenda.toPopulateHTML();
 
-            var $modal = '';
-            $modal += '<div class="modal fade" id="cadastro" tabindex="-1" role="dialog" aria-labelledby="largeModal" aria-hidden="true">';
-            $modal += '<div class="modal-dialog modal-lg">';
-            $modal += '<div class="modal-content">';
-            $modal += '<div class="modal-header">';
-            $modal += '<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>';
-            $modal += '<h4 class="modal-title">Cadastrar contato</h4>';
-            $modal += '</div>';
-            $modal += '<div class="modal-body" >';
-            $modal += '<div class="input-group">';
-            $modal += '<div>';
-            $modal += '<label for="nome">Nome</label><br/>';
-            $modal += '<input type="text" class="form-control inputModal" name="nome" placeholder="Nome" aria-describedby="sizing-addon2">';
-            $modal += '</div>';
-            $modal += '<br/><br/>';
-            $modal += '<div id="containerTelefones">';
-            $modal += '<label for="nome">Telefones</label><br/>';
-            $modal += '<input type="text" class="form-control inputModal" id="telefone1" name="telefones[]" placeholder="Telefone" aria-describedby="sizing-addon2">';
-            $modal += '<span id="adicionarTelefones1" class="glyphicon glyphicon-plus " onclick="Agenda.functions.adicionaInputs(this)" cursor: pointer;"></span>';
-            $modal += '<span id="removerTelefones1" class="glyphicon glyphicon-remove " onclick="Agenda.functions.removeInputs(this)"   cursor: pointer;"></span>';
-            $modal += '</div>';
-            $modal += '<br/><br/>';
-            $modal += '<div id="containerEmails">';
-            $modal += '<label for="email">E-mails</label><br/>';
-            $modal += '<input type="text" class="form-control inputModal" id="email1" name="emails[]" placeholder="E-mail" aria-describedby="sizing-addon2">';
-            $modal += '<span id="adicionarEmails1" class="glyphicon glyphicon-plus " onclick="Agenda.functions.adicionaInputs(this)" style="cursor: pointer;"></span>';
-            $modal += '<span id="removerEmails1" class="glyphicon glyphicon-remove " onclick="Agenda.functions.removeInputs(this)"   style="cursor: pointer;"></span>';
-            $modal += '</div>';
-            $modal += '</div>';
-            $modal += '</div>';
-            $modal += '<div class="modal-footer">';
-            $modal += '<button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>';
-            $modal += '<button type="button" class="btn btn-success">Cadastrar</button>';
-            $modal += '</div>';
-            $modal += '</div>';
-            $modal += '</div>';
-            $modal += '</div>';
-
-            $("#cadastro").html($modal);
         });
-
-    },
-
-    functions : {
-
-        adicionaInputs :function (input)
-        {
-
-            var $container = $(input).parent().attr('id');
-            var qtdInputs = $('#'+$container).find('input').length + 1;
-
-            console.log("quantidade de inputs");
-            console.log(qtdInputs);
-
-            var appendInput = "";
-
-            var name     = "";
-            var inputID  = "";
-            var addID    = "";
-            var removeID = "";
-
-            if($container === 'containerTelefones')
-            {
-                name     = "telefones[]";
-                inputID  = "telefone";
-                addID    = "adicionarTelefones";
-                removeID = "removerTelefones";
-            }
-            if($container === 'containerEmails')
-            {
-                name     = "emails[]";
-                inputID  = "email";
-                addID    = "adicionarEmails";
-                removeID = "removerEmails";
-            }
-
-            appendInput += "<input type='text' name='"+name+"' class='form-control' id='" + inputID + qtdInputs + "' style='width: 75%;margin-bottom: 3%;'>";
-            appendInput += "<span id='" + addID + qtdInputs + "'    onclick='Agenda.functions.adicionaInputs(this)' class='glyphicon glyphicon-plus' style='cursor:pointer;'></span>";
-            appendInput += "<span id='" + removeID + qtdInputs + "' onclick='Agenda.functions.removeInputs(this)' class='glyphicon glyphicon-remove' style='cursor:pointer;'></span>";
-
-
-            $('#'+$container).append(appendInput);
-        },
-
-        removeInputs: function (input)
-        {
-            console.log("removeInputs");
-
-            var id = $(input).attr('id');
-            id = id.substring(id.length,id.length-1);
-
-            console.log("id" + id);
-
-            var number = id.substring(id.length-1,id.length);
-
-            console.log("numero" + number);
-
-
-            $target = id + number;
-
-
-            $('#' + $target).remove();
-            $('#removerEmails' + number).remove();
-            $('#adicionarEmails' + number).remove();
-        }
-
-    },
-
-    init : function () {
-
-
-        Agenda.events();
-
 
     }
-
-
-
 }

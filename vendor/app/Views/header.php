@@ -60,8 +60,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Contatos <span class="caret"></span></a>
                         <ul class="dropdown-menu">
-                            <li><a href="/contatos/add">Adicionar</a></li>
-                            <li><a href="#">Gerenciar</a></li>
+                            <li id="gerenciar"><a href="#">Gerenciar</a></li>
                         </ul>
                     </li>
                     <li><a href="#">Relat&oacute;rios</a></li>
