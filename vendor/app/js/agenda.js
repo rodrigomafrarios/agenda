@@ -127,13 +127,13 @@ var Agenda =
 
     toPopulateHTML : function () {
 
-        $.get('/contatos/getDataToManagement',function (data) {
-            var returnJSON = $.parseJSON(data);
-
-            $('#contentResult').load('/contatos/manage');
-
+        $.ajax({
+            url : '/contatos/getDataToManagement',
+            type: 'GET',
+            success : function (data) {
+                window.location.href = '/contatos/manage?data=' + data;
+            }
         });
-
     },
 
     events : function() {

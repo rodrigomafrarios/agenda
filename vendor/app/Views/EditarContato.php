@@ -17,7 +17,7 @@ require_once("header.php");?>
             <div class="box box-primary">
 
                 <div class="box-header">
-                    <a href="/contatos/add" class="btn btn-success">Cadastrar Categoria</a>
+                    <a href="/contatos/add" class="btn btn-success">Cadastrar contato</a>
                 </div>
 
                 <div class="box-body no-padding">
@@ -29,7 +29,7 @@ require_once("header.php");?>
                             <th style="width: 240px">A&ccedil;&otilde;es</th>
                         </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="tBodyMgr">
 
                         <tr>
                             <td></td>
@@ -52,3 +52,8 @@ require_once("header.php");?>
 
 
 <?php require_once("footer.php");?>
+
+<script>
+   $(document).
+
+</script>
