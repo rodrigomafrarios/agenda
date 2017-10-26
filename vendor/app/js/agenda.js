@@ -48,8 +48,6 @@ var Agenda =
             resposta  = 'sucesso';
         }
 
-        console.log("container: " + container);
-
         // obtem o alert
         var $alert = $body.find(container);
 
@@ -84,7 +82,7 @@ var Agenda =
             });
     },
 
-    formValidation: function ($class)
+    formValidation: function ($class,$action)
     {
         var $inputs                  = $('.' + $class).find('input');
         var msg                      = $('#msgError').val();
@@ -95,7 +93,7 @@ var Agenda =
         for(var i = 0; i < $inputs.length;i++)
         {
             //checa se o input está vazio
-            if($($inputs[i]).val().length === 0 && $($inputs[i]).attr('name') == 'nome')
+            if($($inputs[i]).val().length === 0 && $($inputs[i]).attr('name') === 'nome')
             {
                 var msg = $('#msgErrorNome').val();
                 Agenda.showError(msg,'Erro');
@@ -109,7 +107,7 @@ var Agenda =
 
         //abre requisição AJAX
         var req = new XMLHttpRequest();
-        req.open("POST","/contatos/doAdd",true);
+        req.open("POST","/contatos/"+$action,true);
 
         req.onreadystatechange = function () {
 
@@ -118,8 +116,18 @@ var Agenda =
                 var response = this.response;
                 response = $.parseJSON(response);
 
-                Agenda.showError(response.msg,'Sucesso');
+                if($action === 'doEdit')
+                {
+                    $.ajax({
+                        url : '/contatos/getDataToManagement',
+                        type: 'GET',
+                        success : function (data) {
+                            window.location.href = '/contatos/manage?data='+data;
+                        }
+                    });
+                }
 
+                Agenda.showError(response.msg,'Sucesso');
             }
         };
         req.send(formData);
@@ -131,7 +139,41 @@ var Agenda =
             url : '/contatos/getDataToManagement',
             type: 'GET',
             success : function (data) {
-                window.location.href = '/contatos/manage?data=' + data;
+
+                window.location.href = '/contatos/manage?data='+data;
+            }
+        });
+    },
+
+    editar : function (id) {
+
+        $.ajax({
+            url : '/contatos/getDataToEdit&codContato='+id,
+            type: 'GET',
+
+            success : function (data) {
+                window.location.href = '/contatos/edit?data='+data;
+            }
+        });
+
+    },
+
+    excluir : function (id) {
+
+        $.ajax({
+            url : '/contatos/delete&codContato='+id,
+            type: 'GET',
+
+            success : function ()
+            {
+                $.ajax({
+                    url : '/contatos/getDataToManagement',
+                    type: 'GET',
+                    success : function (data) {
+
+                        window.location.href = '/contatos/manage?data='+data;
+                    }
+                });
             }
         });
     },
@@ -139,13 +181,14 @@ var Agenda =
     events : function() {
 
         $('#cadastrar').click(function () {
-            Agenda.formValidation('modal-body')
+            Agenda.formValidation('modal-body','doAdd')
+        });
+        $('#editar').click(function () {
+            Agenda.formValidation('form-inline','doEdit')
         });
 
         $('#gerenciar').click(function () {
-            console.log("clicou em gerenciar");
             Agenda.toPopulateHTML();
-
         });
 
     }
