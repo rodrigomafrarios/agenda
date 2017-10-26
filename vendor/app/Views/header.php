@@ -63,7 +63,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                             <li id="gerenciar"><a href="#">Gerenciar</a></li>
                         </ul>
                     </li>
-                    <li><a href="#">Relat&oacute;rios</a></li>
+                    <li><a id="reports" href="#">Relat&oacute;rio</a></li>
                 </ul>
             </div><!--/.nav-collapse -->
         </div><!--/.container-fluid -->

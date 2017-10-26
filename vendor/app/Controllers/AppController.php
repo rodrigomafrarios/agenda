@@ -32,9 +32,17 @@ class AppController
             $method     = substr($controller,strpos($controller,"/")+1,strlen($controller)-1);
             $controller = substr($controller,0,strpos($controller,"/"));
 
+
             if($controller == 'contatos')
             {
                 $app = new ContatosController();
+                $app->{$method}();
+
+            }
+
+            if($controller == 'relatorios')
+            {
+                $app = new RelatoriosController();
                 $app->{$method}();
 
             }

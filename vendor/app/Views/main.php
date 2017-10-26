@@ -32,6 +32,7 @@ include_once ("header.php");
                         <div class="form-group has-feedback" id="containerName" >
                             <label class="control-label" for="nome">Nome</label><br/>
                             <input type="text" class="form-control inputModal" name="nome" placeholder="Nome" aria-describedby="sizing-addon2">
+                            <input type="hidden" name="codContato" />
                         </div>
                         <br/><br/>
                         <div class="form-group has-feedback" id="containerTelefones" >

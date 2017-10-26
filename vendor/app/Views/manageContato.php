@@ -15,10 +15,6 @@ require_once("header.php");?>
         <div class="col-md-12">
             <div class="box box-primary">
 
-                <div class="box-header">
-                    <a href="/contatos/add" class="btn btn-success">Cadastrar contato</a>
-                </div>
-
                 <div class="box-body no-padding">
                     <table class="table table-striped">
                         <thead>

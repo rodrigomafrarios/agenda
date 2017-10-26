@@ -10,6 +10,7 @@ namespace app\Models;
 
 use \app\DB\Sql;
 use \app\Models\Model;
+use \app\Models\PDOStatement;
 
 class Contato extends Model
 {
@@ -31,15 +32,40 @@ class Contato extends Model
 
         $sql = new Sql();
 
+
+        if(isset($values["codContato"]) == true and empty($values["codContato"]) == true){
+            $values["codContato"] = null;
+        }
+        if(isset($values["emailPessoal"]) == true and empty($values["emailPessoal"]) == true)
+        {
+            $values["emailPessoal"] = null;
+        }
+        if(isset($values["emailTrabalho"]) == true and empty($values["emailTrabalho"]) == true)
+        {
+            $values["emailTrabalho"] = null;
+        }
+        if(isset($values["telefoneResidencial"]) == true and empty($values["telefoneResidencial"]) == true)
+        {
+            $values["telefoneResidencial"] = null;
+        }
+        if(isset($values["telefoneComercial"]) == true and empty($values["telefoneComercial"]) == true)
+        {
+            $values["telefoneComercial"] = null;
+        }
+        if(isset($values["telefoneCelular"]) == true and empty($values["telefoneCelular"]) == true)
+        {
+            $values["telefoneCelular"] = null;
+        }
+
         try{
             $result = $sql->select("CALL sp_contatos_dados_save(:nomecontato,:codcontato,:emailpessoal,:emailtrabalho,:telefoneresidencial,:telefonetrabalho,:telefonecelular)",
-                array(':nomecontato'         => $values["nome"],
-                    ':codcontato'          => isset($values["codContato"]) == true ? $values["codContato"] : 0,
-                    ':emailpessoal'        => isset($values["emailPessoal"]) == true ? $values["emailPessoal"] : 0,
-                    ':emailtrabalho'       => isset($values["emailTrabalho"]) == true ? $values["emailTrabalho"] : 0 ,
-                    ':telefoneresidencial' => isset($values["telefoneResidencial"]) == true ? $values["telefoneResidencial"] : 0,
-                    ':telefonetrabalho'    => isset($values["telefoneTrabalho"]) == true ? $values["telefoneTrabalho"] : 0,
-                    ':telefonecelular'     => isset($values["telefoneCelular"]) == true ? $values["telefoneCelular"] : 0
+                array(':nomecontato'       => $values["nome"],
+                    ':codcontato'          => $values["codContato"],
+                    ':emailpessoal'        => $values["emailPessoal"],
+                    ':emailtrabalho'       => $values["emailTrabalho"],
+                    ':telefoneresidencial' => $values["telefoneResidencial"],
+                    ':telefonetrabalho'    => $values["telefoneComercial"],
+                    ':telefonecelular'     => $values["telefoneCelular"]
                 ));
         }catch (\Exception $e){
             die($e);
@@ -58,6 +84,20 @@ class Contato extends Model
         $sql = new Sql();
 
         $result = $sql->select("SELECT cod,nome FROM contatos");
+
+        return $result;
+    }
+
+    public static function getAllToReport()
+    {
+        $sql = new Sql();
+
+        $result = $sql->select("SELECT c.cod,c.nome,ce.email,te.descricao as 'tipo_email',ct.telefone,tt.descricao as 'tipo_telefone'
+                                         FROM contatos c
+                                         LEFT JOIN contato_emails ce ON c.cod = ce.cod_contato
+                                         LEFT JOIN tipos_emails te ON ce.cod_tipo_email = te.cod
+                                         LEFT JOIN contato_telefones ct ON c.cod = ct.cod_contato
+                                         LEFT JOIN tipos_telefones tt ON ct.cod_tipo_telefone = tt.cod;");
 
         return $result;
     }

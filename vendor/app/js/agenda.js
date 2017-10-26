@@ -133,14 +133,14 @@ var Agenda =
         req.send(formData);
     },
 
-    toPopulateHTML : function () {
+    toPopulateHTML : function ($controller,$method,$callback) {
 
         $.ajax({
-            url : '/contatos/getDataToManagement',
+            url : '/'+$controller+'/'+$method,
             type: 'GET',
             success : function (data) {
 
-                window.location.href = '/contatos/manage?data='+data;
+                window.location.href = '/'+$controller+'/'+$callback+'?data='+data;
             }
         });
     },
@@ -188,7 +188,12 @@ var Agenda =
         });
 
         $('#gerenciar').click(function () {
-            Agenda.toPopulateHTML();
+            Agenda.toPopulateHTML('contatos','getDataToManagement','manage');
+        });
+
+        $('#reports').click(function () {
+            console.log("clicou em reports");
+            Agenda.toPopulateHTML('relatorios','getDataToReport','tableReport');
         });
 
     }

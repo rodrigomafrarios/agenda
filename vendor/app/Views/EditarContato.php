@@ -32,7 +32,7 @@ require_once("header.php");
     </div>
     <br /><br /><br /><br />
     <div align="center">
-        <button type="button" class="btn btn-danger" data-dismiss="modal">Fechar</button>
+        <a href="/" class="btn btn-danger" data-dismiss="modal">Voltar</a>
         <button type="button" id="editar" class="btn btn-success">Editar</button>
     </div>
     <?php include_once ("error_box.php"); ?>
@@ -74,11 +74,11 @@ require_once("header.php");
             {
                 $('#telefoneCelular').val(telefones[i].telefone);
             }
-            if(telefones[i].descricao === 'RESIDENCIAL')
+            if(telefones[i].descricao === 'TRABALHO')
             {
                 $('#telefoneComercial').val(telefones[i].telefone);
             }
-            if(telefones[i].descricao === 'TRABALHO')
+            if(telefones[i].descricao === 'RESIDENCIAL')
             {
                 $('#telefoneResidencial').val(telefones[i].telefone);
             }
