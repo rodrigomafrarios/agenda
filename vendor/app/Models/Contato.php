@@ -102,6 +102,35 @@ class Contato extends Model
         return $result;
     }
 
+    public function getContactsPage($page = 1, $itensPage = 3)
+    {
+        $start = ($page - 1) * $itensPage;
+
+        $sql = new Sql();
+
+        $results = $sql->select("
+                            SELECT SQL_CALC_FOUND_ROWS *
+                              FROM contatos c
+                              LEFT JOIN contato_emails ce ON c.cod = ce.cod_contato
+                              LEFT JOIN tipos_emails te ON ce.cod_tipo_email = te.cod
+                              LEFT JOIN contato_telefones ct ON c.cod = ct.cod_contato
+                              LEFT JOIN tipos_telefones tt ON ct.cod_tipo_telefone = tt.cod
+                              LIMIT $start,$itensPage;
+                              ");
+
+        $total = $sql->select("SELECT FOUND_ROWS() AS total;");
+
+        $contatos = Contato::checkList($results);
+
+        $data = array("data"    => $contatos,
+            "total"   => $total[0]['total'],
+            "pages"   => round((ceil($total[0]['total'])/$itensPage),0)
+        );
+
+        return $data;
+
+    }
+
     public function getByID($id)
     {
         $sql = new Sql();
@@ -150,6 +179,20 @@ class Contato extends Model
         }
 
         return $data;
+    }
+
+
+
+    public static function checkList($list)
+    {
+        foreach ($list as &$row)
+        {
+            $p = new Contato();
+            $p->setData($row);
+            $row = $p->getValues();
+        }
+
+        return $list;
     }
 
     public function deleteContact($id)

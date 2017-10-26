@@ -14,8 +14,12 @@ class RelatoriosController
 {
     public function getDataToReport()
     {
+        $getVars = array();
+
+        parse_str($_SERVER["REQUEST_URI"],$getVars);
+
         try{
-            $data = Contato::getAllToReport();
+            $data = Contato::getContactsPage($getVars['pagination']);
         }catch (\Exception $e){
             $data = array();
         }

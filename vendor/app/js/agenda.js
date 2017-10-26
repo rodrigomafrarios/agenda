@@ -133,16 +133,26 @@ var Agenda =
         req.send(formData);
     },
 
-    toPopulateHTML : function ($controller,$method,$callback) {
+    toPopulateHTML : function ($controller,$method,$callback,$pagination) {
+        var url = '/'+$controller+'/'+$method;
+
+        if($pagination !== null)
+        {
+            url = url + '&pagination=' + $pagination;
+        }
 
         $.ajax({
-            url : '/'+$controller+'/'+$method,
+            url : url,
             type: 'GET',
             success : function (data) {
 
                 window.location.href = '/'+$controller+'/'+$callback+'?data='+data;
             }
         });
+    },
+
+    pagination : function ($pagination) {
+        Agenda.toPopulateHTML('relatorios','getDataToReport','tableReport',$pagination);
     },
 
     editar : function (id) {
@@ -188,12 +198,61 @@ var Agenda =
         });
 
         $('#gerenciar').click(function () {
-            Agenda.toPopulateHTML('contatos','getDataToManagement','manage');
+            Agenda.toPopulateHTML('contatos','getDataToManagement','manage',null);
         });
 
         $('#reports').click(function () {
-            console.log("clicou em reports");
-            Agenda.toPopulateHTML('relatorios','getDataToReport','tableReport');
+            Agenda.toPopulateHTML('relatorios','getDataToReport','tableReport',1);
+        });
+
+        var idTimeout = 0;
+
+        $("#buscaTable").keyup(function(){
+
+            // checa se ja existe um evento em andamento
+            if(idTimeout != 0)
+            {
+                clearTimeout(idTimeout);
+            }
+
+            idTimeout = setTimeout(function(){
+
+                // zera o timeout
+                idTimeout = 0;
+
+                // faz a busca
+                var texto = $("#buscaTable").val();
+
+                // remove  a tbody da tela para trata-la
+                var $tbody = $('#tBodyReport').detach();
+
+                $tbody.find(".dadosContato").each(function(){
+
+                    // concatena todas as tds em uma unica string para fazer a busca
+                    var strTodasColunas = '';
+
+                    $(this).find('td.busca').each(function(){
+
+                        strTodasColunas += $.trim($(this).text());
+                    });
+
+                    if(texto !== undefined)
+                    {
+                        var resultado = strTodasColunas.toUpperCase().indexOf(texto.toUpperCase());
+
+                        if(resultado < 0) {
+                            $(this).hide();
+                        }else {
+                            $(this).show();
+                        }
+                    }
+                });
+
+                // terminada a busca volta o tbody pra tela
+                $("#tableReport").append($tbody);
+
+            }, 400);
+
         });
 
     }

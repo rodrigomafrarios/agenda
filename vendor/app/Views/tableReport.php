@@ -16,6 +16,11 @@ require_once("header.php");
         <div class="col-md-12">
             <div class="box box-primary">
                 <div class="box-body no-padding">
+                    <div align="right">
+                        <label for="buscaTable">Busca: </label>
+                        <input  id="buscaTable" />
+                    </div>
+                    <br />
                     <table class="table table-striped" id="tableReport">
                         <thead>
                         <tr>
@@ -35,6 +40,17 @@ require_once("header.php");
             </div>
         </div>
     </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="contact-pagination text-center">
+                <nav>
+                    <ul class="pagination">
+
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
 
 </section>
 
@@ -50,47 +66,51 @@ require_once("header.php");
         var decodedJson  = decodeURIComponent(hashes);
         var aux          = decodedJson.substring(decodedJson.indexOf("=")+1,decodedJson.length);
         var report       = $.parseJSON(aux);
+        var total        = report.total;
+        var pagination   = report.pages;
+        report           = report.data;
         var montaBody    = "";
+
 
         for(var i = 0; i < report.length; i++)
         {
-            montaBody += '<tr>';
-            montaBody += '   <td>' + report[i].cod +'</td>';
-            montaBody += '   <td>' + report[i].nome +'</td>';
+            montaBody += '<tr class="dadosContato">';
+            montaBody += '   <td class="busca">' + report[i].cod +'</td>';
+            montaBody += '   <td class="busca">' + report[i].nome +'</td>';
 
-            if(report[i].email === null)
+            if(report[i].email === null || report[i].email === undefined)
             {
-                montaBody += '   <td>-</td>';
+                montaBody += '   <td class="busca">-</td>';
             }
             else
             {
-                montaBody += '   <td>' + report[i].email +'</td>';
-            }
-
-            if(report[i].tipo_email === null)
-            {
-                montaBody += '   <td>-</td>';
-            }
-            else
-            {
-                montaBody += '   <td>' + report[i].tipo_email +'</td>';
+                montaBody += '   <td class="busca">' + report[i].email +'</td>';
             }
 
-            if(report[i].telefone === null)
+            if(report[i].tipo_email === null || report[i].tipo_email === undefined)
             {
-                montaBody += '   <td>-</td>';
+                montaBody += '   <td class="busca">-</td>';
             }
             else
             {
-                montaBody += '   <td>' + report[i].telefone +'</td>';
+                montaBody += '   <td class="busca">' + report[i].tipo_email +'</td>';
             }
-            if(report[i].tipo_telefone === null)
+
+            if(report[i].telefone === null || report[i].telefone === undefined)
             {
-                montaBody += '   <td>-</td>';
+                montaBody += '   <td class="busca">-</td>';
             }
             else
             {
-                montaBody += '   <td>' + report[i].tipo_telefone +'</td>';
+                montaBody += '   <td class="busca">' + report[i].telefone +'</td>';
+            }
+            if(report[i].tipo_telefone === null || report[i].tipo_telefone === undefined)
+            {
+                montaBody += '   <td class="busca">-</td>';
+            }
+            else
+            {
+                montaBody += '   <td class="busca">' + report[i].tipo_telefone +'</td>';
             }
 
             montaBody += '</tr>';
@@ -98,12 +118,10 @@ require_once("header.php");
 
         $('#tBodyReport').append(montaBody);
 
-        $('#tableReport').DataTable( {
-            dom: 'Bfrtip',
-            extend: 'excel',
-        });
-
-
+        for(var i = 1; i < pagination; i++)
+        {
+            $('.pagination').append('<li><a onclick="Agenda.pagination('+i+')" href="#">'+i+'</a></li>');
+        }
 
     });
 
